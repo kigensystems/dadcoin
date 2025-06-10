@@ -1,0 +1,40 @@
+Required Sound Files for Grill Master Challenge
+================================================
+
+Please add these sound files to the /public/sounds/ directory:
+
+1. sizzle.mp3
+   - Description: Continuous meat sizzling sound
+   - Duration: 3-5 seconds (loopable)
+   - Usage: Plays when food is cooking on the grill
+
+2. flip.mp3
+   - Description: Spatula flipping/clicking sound
+   - Duration: 0.5-1 second
+   - Usage: Plays when player clicks on food
+
+3. swat.mp3
+   - Description: Quick swat/whack sound
+   - Duration: 0.3-0.5 seconds
+   - Usage: Plays when player clicks on a fly
+
+4. success.mp3
+   - Description: Pleasant "ding" or chime sound
+   - Duration: 1-2 seconds
+   - Usage: Plays when food is flipped at perfect timing
+
+5. burn.mp3
+   - Description: Food burning/charring sound
+   - Duration: 1-2 seconds
+   - Usage: Plays when food becomes burnt
+
+6. background-bbq.mp3
+   - Description: Ambient BBQ atmosphere (distant chatter, birds, etc.)
+   - Duration: 30-60 seconds (loopable)
+   - Usage: Background ambience during gameplay
+
+You can find royalty-free versions of these sounds on:
+- freesound.org
+- zapsplat.com
+- soundsnap.com
+- freesoundslibrary.com

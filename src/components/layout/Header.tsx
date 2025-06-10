@@ -50,10 +50,11 @@ const Header: React.FC = () => {
         const scrollPosition = window.scrollY;
         setIsVisible(scrollPosition > 100);
       } else {
-        setIsVisible(false);
+        setIsVisible(true); // Always show header on non-home pages
       }
     };
     
+    handleScroll(); // Check initial state
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, [location.pathname]);
@@ -77,9 +78,6 @@ const Header: React.FC = () => {
     }
   };
 
-  if (location.pathname !== '/') {
-    return null;
-  }
 
   return (
     <header 
@@ -101,6 +99,12 @@ const Header: React.FC = () => {
             className={`font-medium ${location.pathname === '/' ? 'font-bold border-b-2 border-black' : ''}`}
           >
             Home
+          </Link>
+          <Link 
+            to="/game" 
+            className={`font-medium ${location.pathname === '/game' ? 'font-bold border-b-2 border-black' : ''}`}
+          >
+            Play Game
           </Link>
           <Link 
             to="/about" 
@@ -153,6 +157,13 @@ const Header: React.FC = () => {
               onClick={() => setIsMenuOpen(false)}
             >
               Home
+            </Link>
+            <Link 
+              to="/game" 
+              className={`text-xl ${location.pathname === '/game' ? 'font-bold' : ''}`}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Play Game
             </Link>
             <Link 
               to="/about" 

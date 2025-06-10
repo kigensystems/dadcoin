@@ -37,14 +37,20 @@ const HomePage: React.FC = () => {
         <h1 className="text-7xl md:text-8xl font-extrabold mb-8">
           <span className="dad-outline text-dadcoin-black">DAD</span>COIN
         </h1>
-        <img 
-          src="https://i.imgur.com/rgo63fD.png" 
-          alt="Dadcoin Hero" 
+        <video 
+          src="/hero-video.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
           className="w-96 h-96 object-contain mb-12"
         />
         <div className="max-w-2xl mx-auto mb-12">
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/auth" className="btn btn-primary">
+            <Link to="/game" className="btn btn-primary">
+              🎮 Play Game & Earn Dadcoin
+            </Link>
+            <Link to="/auth" className="btn btn-outline">
               Join the Dad Club
             </Link>
           </div>

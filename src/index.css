@@ -58,3 +58,29 @@
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-10px); }
 }
+
+@keyframes fadeUpOut {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -80%) scale(1.2);
+  }
+}
+
+.bg-gradient-radial {
+  background: radial-gradient(circle, var(--tw-gradient-stops));
+}
+
+/* BBQ Grill Game Specific Styles */
+@layer utilities {
+  .bg-gradient-radial {
+    background: radial-gradient(circle, var(--tw-gradient-stops));
+  }
+  
+  .cursor-spatula {
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="8" height="10" rx="2"/><path d="M10 7h14"/></svg>') 16 16, pointer;
+  }
+}
