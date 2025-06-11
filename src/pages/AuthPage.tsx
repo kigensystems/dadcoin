@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Lock, UserPlus, LogIn, Wallet } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { registerWallet, loginWallet } from '../lib/wallet-auth';
+import { useWalletAuth } from '../context/WalletAuthContext';
 
 const AuthPage: React.FC = () => {
   const navigate = useNavigate();
+  const { refreshUser } = useWalletAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [walletAddress, setWalletAddress] = useState('');
   const [password, setPassword] = useState('');
@@ -26,38 +28,19 @@ const AuthPage: React.FC = () => {
         throw new Error('You must accept the Terms and Conditions');
       }
 
+      let result;
       if (isLogin) {
-        const { error: signInError } = await supabase.auth.signInWithPassword({
-          email: `${walletAddress}@dadcoin.local`,
-          password
-        });
-        
-        if (signInError) {
-          throw signInError;
-        }
+        result = await loginWallet(walletAddress, password);
       } else {
-        if (password.length < 6) {
-          throw new Error('Password must be at least 6 characters long');
-        }
-
-        const { data: { user }, error: signUpError } = await supabase.auth.signUp({
-          email: `${walletAddress}@dadcoin.local`,
-          password
-        });
-
-        if (signUpError) throw signUpError;
-
-        // Save wallet address
-        const { error: walletError } = await supabase
-          .from('user_wallets')
-          .insert({
-            user_id: user?.id,
-            wallet_address: walletAddress
-          });
-
-        if (walletError) throw walletError;
+        result = await registerWallet(walletAddress, password);
       }
 
+      if (!result.success) {
+        throw new Error(result.error || 'Authentication failed');
+      }
+
+      // Refresh user context and redirect to home page
+      refreshUser();
       navigate('/');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
@@ -75,15 +58,15 @@ const AuthPage: React.FC = () => {
           </h1>
           <p className="text-gray-600">
             {isLogin
-              ? 'Log in to start generating dad jokes'
-              : 'Sign up to become a certified dad joke connoisseur'}
+              ? 'Enter your wallet address and password to login'
+              : 'Register your Solana wallet to start earning DADCOIN'}
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label htmlFor="wallet" className="block text-sm font-medium text-gray-700 mb-1">
-              Wallet Address
+              Solana Wallet Address
             </label>
             <div className="relative">
               <Wallet className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
@@ -91,9 +74,9 @@ const AuthPage: React.FC = () => {
                 id="wallet"
                 type="text"
                 value={walletAddress}
-                onChange={(e) => setWalletAddress(e.target.value)}
+                onChange={(e) => setWalletAddress(e.target.value.trim())}
                 className="pl-10 w-full p-3 border-2 border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
-                placeholder="Enter your wallet address"
+                placeholder="e.g. 9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM"
                 required
               />
             </div>
@@ -178,6 +161,8 @@ const AuthPage: React.FC = () => {
                 setIsLogin(!isLogin);
                 setError('');
                 setAcceptedTerms(false);
+                setWalletAddress('');
+                setPassword('');
               }}
               className="text-sm text-gray-600 hover:text-black transition-colors"
             >

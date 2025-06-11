@@ -1,6 +1,6 @@
 import { supabase } from './supabase';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/.netlify/functions';
 
 interface GameScorePayload {
   score: number;
@@ -18,35 +18,27 @@ interface TokenClaimPayload {
 // Submit game score for validation and token earning
 export const submitGameScore = async (payload: GameScorePayload) => {
   try {
-    // Get authenticated user
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
+    // Get authenticated user and session
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) throw new Error('User not authenticated');
 
-    // In production, this would call your backend API
-    // For now, we'll store in Supabase with validation
-    const { data, error } = await supabase
-      .from('game_sessions')
-      .insert({
-        user_id: user.id,
-        game_type: payload.gameType,
-        score: payload.score,
-        wallet_address: payload.walletAddress,
-        tokens_earned: calculateTokenReward(payload.score, payload.gameType),
-        session_id: payload.sessionId,
-        claimed: false
-      })
-      .select()
-      .single();
+    // Call Netlify Function
+    const response = await fetch(`${API_BASE_URL}/submit-score`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.access_token}`
+      },
+      body: JSON.stringify(payload)
+    });
 
-    if (error) throw error;
+    const data = await response.json();
 
-    return {
-      success: true,
-      data: {
-        sessionId: data.session_id,
-        tokensEarned: data.tokens_earned
-      }
-    };
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to submit score');
+    }
+
+    return data;
   } catch (error) {
     console.error('Error submitting game score:', error);
     return {
@@ -59,46 +51,31 @@ export const submitGameScore = async (payload: GameScorePayload) => {
 // Claim tokens for a validated game session
 export const claimGameTokens = async (payload: TokenClaimPayload) => {
   try {
-    // Get authenticated user
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
+    // Call Netlify Function
+    const response = await fetch(`${API_BASE_URL}/claim-tokens`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        sessionId: payload.gameSessionId,
+        walletAddress: payload.walletAddress,
+        signature: payload.signature || ''
+      })
+    });
 
-    // Verify game session and prevent double claiming
-    const { data: session, error: sessionError } = await supabase
-      .from('game_sessions')
-      .select('*')
-      .eq('session_id', payload.gameSessionId)
-      .eq('user_id', user.id)
-      .eq('claimed', false)
-      .single();
+    const data = await response.json();
 
-    if (sessionError || !session) {
-      throw new Error('Invalid or already claimed game session');
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to claim tokens');
     }
 
-    // Mark as claimed
-    const { error: updateError } = await supabase
-      .from('game_sessions')
-      .update({ 
-        claimed: true, 
-        claimed_at: new Date().toISOString() 
-      })
-      .eq('session_id', payload.gameSessionId);
-
-    if (updateError) throw updateError;
-
-    // In production, your backend would:
-    // 1. Create and sign the SPL token transfer transaction
-    // 2. Submit to Solana network
-    // 3. Return transaction signature
-
-    // For now, return mock response
     return {
       success: true,
       data: {
-        transactionSignature: 'PENDING_BACKEND_IMPLEMENTATION',
-        amount: session.tokens_earned,
-        message: 'Token distribution requires backend implementation'
+        transactionSignature: data.signature,
+        amount: data.amount,
+        message: 'Tokens successfully transferred!'
       }
     };
   } catch (error) {

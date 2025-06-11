@@ -2,11 +2,11 @@ import { PublicKey } from '@solana/web3.js';
 
 // Token configuration - Update these values when you have your token deployed
 export const TOKEN_CONFIG = {
-  // DADCOIN Token Mint Address (you'll provide this after creating the token)
-  MINT_ADDRESS: process.env.VITE_DADCOIN_MINT_ADDRESS || 'YOUR_TOKEN_MINT_ADDRESS_HERE',
+  // DADCOIN Token Mint Address (from pump.fun after token creation)
+  MINT_ADDRESS: process.env.VITE_DADCOIN_MINT_ADDRESS || 'YOUR_PUMP_FUN_TOKEN_MINT_ADDRESS_HERE',
   
-  // Token decimals (usually 9 for SPL tokens)
-  DECIMALS: 9,
+  // Token decimals (pump.fun typically uses 6 decimals, not 9)
+  DECIMALS: 6, // ⚠️ IMPORTANT: Pump.fun uses 6 decimals
   
   // Distribution wallet (holds tokens for game rewards)
   DISTRIBUTION_WALLET: process.env.VITE_DISTRIBUTION_WALLET || 'YOUR_DISTRIBUTION_WALLET_HERE',
@@ -14,7 +14,7 @@ export const TOKEN_CONFIG = {
   // Solana network
   NETWORK: process.env.VITE_SOLANA_NETWORK || 'mainnet-beta',
   
-  // RPC endpoint
+  // RPC endpoint (consider using a faster one for pump.fun tokens)
   RPC_ENDPOINT: process.env.VITE_SOLANA_RPC || 'https://api.mainnet-beta.solana.com',
 };
 

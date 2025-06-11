@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Laugh, DollarSign, TrendingUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import CoinCounter from '../components/home/CoinCounter';
@@ -6,9 +6,20 @@ import JokeGenerator from '../components/home/JokeGenerator';
 import Newsletter from '../components/common/Newsletter';
 import FeatureCard from '../components/home/FeatureCard';
 import { useGlobalPool } from '../context/GlobalPoolContext';
+import { runAllDatabaseTests } from '../lib/database-test';
+import { runWalletAuthTests } from '../lib/wallet-auth-test';
+import '../lib/check-registration';
 
 const HomePage: React.FC = () => {
   const { globalPoolValue } = useGlobalPool();
+  
+  // Run database and wallet auth tests on component mount (development only)
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      runAllDatabaseTests();
+      runWalletAuthTests();
+    }
+  }, []);
   
   const features = [
     {

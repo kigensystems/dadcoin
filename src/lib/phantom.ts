@@ -153,7 +153,7 @@ export const transferDadcoinToUser = async (
       );
     }
 
-    // Add transfer instruction
+    // Add transfer instruction (pump.fun uses 6 decimals)
     const transferAmount = Math.floor(amount * Math.pow(10, TOKEN_CONFIG.DECIMALS));
     transaction.add(
       createTransferInstruction(
